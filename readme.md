@@ -42,12 +42,18 @@ docker compose run airflow-webserver airflow users create `
 
 - 進入 Airflow UI（http://localhost:8080）測試 DAG
     - 停止容器
-    ```docker compose down```
+    ```bash
+    docker compose down
+    ```
     - 刪除所有資料（⚠️會刪除所有 Airflow 設定）
-    ```docker compose down -v```
+    ```bash
+    docker compose down -v
+    ```
 
 - 手動啟動 Web Server
-```docker compose run airflow-webserver airflow webserver```
+```bash
+docker compose run airflow-webserver airflow webserver
+```
 
 ###### 設定環境變數（可選）
 - 若不想在 docker-compose.yml 中硬編碼資料庫密碼，可以使用 .env
