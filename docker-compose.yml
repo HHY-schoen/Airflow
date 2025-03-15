@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  airflow-webserver:
+    image: apache/airflow:2.7.3
+    restart: always
+    depends_on:
+      - airflow-scheduler
+      - airflow-db
+      - airflow-redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor  # executor: 執行器設定，會因單機執行或分散式執行而有設定差異
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow  # sql_alchemy_conn: 資料庫連線字串，Airflow所有核心資訊、狀態皆儲存於此
+      - AIRFLOW__WEBSERVER__BASE_URL=http://localhost:8080
+      - AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE=Asia/Taipei  # default_timezone: Airflow本身的時區設定
+      - AIRFLOW__CELERY__BROKER_URL=redis://airflow-redis:6379/0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags  # dags_folder: 讀取dag的資料夾所在處
+      - ./app.py:/opt/airflow/app.py
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.7.3
+    restart: always
+    depends_on:
+      - airflow-db
+      - airflow-redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://airflow-redis:6379/0
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./app.py:/opt/airflow/app.py
+    command: scheduler
+
+  airflow-db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    ports:
+      - "5432:5432"
+
+  airflow-worker:
+    image: apache/airflow:2.7.3
+    restart: always
+    depends_on:
+      - airflow-db
+      - airflow-redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://airflow-redis:6379/0
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./app.py:/opt/airflow/app.py
+    command: celery worker
+
+  airflow-redis:
+    image: redis:6
+    restart: always
+    ports:
+      - "6379:6379"
