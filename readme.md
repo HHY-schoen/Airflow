@@ -1,17 +1,22 @@
 #### 目錄結構
+```txt
 airflow-docker/
 │── dags/                # 放置 DAG 腳本
 │── docker-compose.yml   # Docker Compose 設定檔
-
+```
 
 #### 步驟
-<!-- 在 dags/ 資料夾內新增 example_dag.py -->
+- 在 dags/ 資料夾內新增 example_dag.py
 
-<!-- 初始化資料庫 -->
+- 初始化資料庫
+```bash
 docker compose up airflow-db -d  # 先啟動資料庫
 docker compose run airflow-webserver airflow db migrate  # 初始化資料庫
+```
 
-<!-- 建立管理員帳號 -->
+- 建立管理員帳號
+```bash
+# windows
 docker compose run airflow-webserver airflow users create `
     -u admin `
     -p admin123 `
@@ -19,32 +24,29 @@ docker compose run airflow-webserver airflow users create `
     -l Parker `
     -r Admin `
     -e spiderman@superhero.org
+```
 
-<!-- 啟動 Airflow -->
-docker compose up -d
-    <!--
+- 啟動 Airflow
+```docker compose up -d```
+```txt
     這將會啟動：
         - Web UI（http://localhost:8080）
         - Scheduler
         - Worker
         - Database（PostgreSQL）
-    -->
+```
 
-<!-- 確認服務是否啟動 -->
-docker compose ps
+- 確認服務是否啟動
+```docker compose ps```
 
-<!-- 進入 Airflow UI（http://localhost:8080）測試 DAG -->
-<!-- admin, admin123 -->
+- 進入 Airflow UI（http://localhost:8080）測試 DAG
+    - 停止容器
+    ```docker compose down```
+    - 刪除所有資料（⚠️會刪除所有 Airflow 設定）
+    ```docker compose down -v```
 
-<!-- 停止容器 -->
-docker compose down
-<!-- 刪除所有資料（⚠️會刪除所有 Airflow 設定） -->
-docker compose down -v
-
-
-<!-- 手動啟動 Web Server -->
-docker compose run airflow-webserver airflow webserver
-
+- 手動啟動 Web Server
+```docker compose run airflow-webserver airflow webserver```
 
 ###### 設定環境變數（可選）
 <!-- 若不想在 docker-compose.yml 中硬編碼資料庫密碼，可以使用 .env -->
