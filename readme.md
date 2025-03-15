@@ -1,6 +1,7 @@
 #### 目錄結構
 ```txt
 airflow-docker/
+│── app/                # 執行檔
 │── dags/                # 放置 DAG 腳本
 │── docker-compose.yml   # Docker Compose 設定檔
 ```
