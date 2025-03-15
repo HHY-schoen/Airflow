@@ -49,20 +49,26 @@ docker compose run airflow-webserver airflow users create `
 ```docker compose run airflow-webserver airflow webserver```
 
 ###### 設定環境變數（可選）
-<!-- 若不想在 docker-compose.yml 中硬編碼資料庫密碼，可以使用 .env -->
+- 若不想在 docker-compose.yml 中硬編碼資料庫密碼，可以使用 .env
+```bash
 echo "AIRFLOW_DB_USER=airflow" >> .env
 echo "AIRFLOW_DB_PASSWORD=airflow" >> .env
-<!-- 然後修改 docker-compose.yml -->
-    environment:
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-db/airflow
+```
+- 然後修改 docker-compose.yml 
+    - environment:
+    ```AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-db/airflow```
 
-<!-- 手動刷新 DAGs -->
+- 手動刷新 DAGs
+```bash
 docker exec -it airflow_pratice-airflow-webserver-1 airflow dags reserialize
-<!-- 直接 刪除 Web Server 的 cache -->
+```
+- 刪除 Web Server 的 cache
+```bash
 docker exec -it airflow_pratice-airflow-webserver-1 airflow dags list
 docker exec -it airflow_pratice-airflow-webserver-1 airflow dags reserialize
 docker compose restart airflow-webserver
+```
 
-<!-- 測試 DAG 是否有效 -->
-docker exec -it airflow_pratice-airflow-webserver-1 airflow dags list
+- 測試 DAG 是否有效
+```docker exec -it airflow_pratice-airflow-webserver-1 airflow dags list```
 
