@@ -83,6 +83,7 @@ docker exec -it airflow_pratice-airflow-webserver-1 airflow dags reserialize
 docker compose restart airflow-webserver
 ```
 
-<!-- 測試 DAG 是否有效 -->
+- 測試 DAG 是否有效
+```bash
 docker exec -it airflow_pratice-airflow-webserver-1 airflow dags list
-
+```
